@@ -18,8 +18,10 @@ When the timer stops, audio playback is gradually lowered then paused.
 2. Tap the Tile to start a timer.
 3. Extend, reduce or cancel the timer with the notification actions.  
    Dismissing the notification (possible since Android 14) also cancels the timer.
+4. Tap the notification, or long-press the Tile, to set the timer to an exact duration,
+   and to configure the default duration and the `+`/`-` steps.
 
-__Note:__ Don't look for a launcher icon, this app only provides a Quick Settings Tile.
+__Note:__ Don't look for a launcher icon, this app is driven by its Quick Settings Tile.
 
 #### Automation
 
@@ -42,11 +44,11 @@ You can trigger the Sleep Timer with tools like [Tasker](https://play.google.com
   ```bash
   adb shell am broadcast -a fr.smarquis.sleeptimer.action.STOP -n fr.smarquis.sleeptimer/.SleepActionReceiver
   ```
-- Increment (default +10 min)
+- Increment (+10 min by default, configurable)
   ```bash
   adb shell am broadcast -a fr.smarquis.sleeptimer.action.INCREMENT -n fr.smarquis.sleeptimer/.SleepActionReceiver
   ```
-- Decrement (default -10 min)
+- Decrement (-10 min by default, configurable)
   ```bash
   adb shell am broadcast -a fr.smarquis.sleeptimer.action.DECREMENT -n fr.smarquis.sleeptimer/.SleepActionReceiver
   ```

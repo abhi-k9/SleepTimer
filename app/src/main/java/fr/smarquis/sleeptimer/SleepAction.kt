@@ -5,10 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_DECREMENT_MILLIS
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_INCREMENT_MILLIS
 import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_MAX_MILLIS
-import java.util.concurrent.TimeUnit.MILLISECONDS
 
 enum class SleepAction(private val value: String) {
     START("fr.smarquis.sleeptimer.action.START"),
@@ -17,10 +14,10 @@ enum class SleepAction(private val value: String) {
         override fun title(context: Context) = context.getText(android.R.string.cancel)
     },
     INCREMENT("fr.smarquis.sleeptimer.action.INCREMENT") {
-        override fun title(context: Context) = "+" + MILLISECONDS.toMinutes(TIMEOUT_INCREMENT_MILLIS)
+        override fun title(context: Context) = "+" + SleepSetting.INCREMENT.minutes(context)
     },
     DECREMENT("fr.smarquis.sleeptimer.action.DECREMENT") {
-        override fun title(context: Context) = "-" + MILLISECONDS.toMinutes(TIMEOUT_DECREMENT_MILLIS)
+        override fun title(context: Context) = "-" + SleepSetting.DECREMENT.minutes(context)
     },
     UPDATE("fr.smarquis.sleeptimer.action.UPDATE"),
 

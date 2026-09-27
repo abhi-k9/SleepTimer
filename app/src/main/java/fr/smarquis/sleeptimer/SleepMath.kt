@@ -1,5 +1,7 @@
 package fr.smarquis.sleeptimer
 
+import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
 /**
@@ -24,7 +26,7 @@ object SleepMath {
      */
     fun secondsToMillis(seconds: Long, maxMillis: Long): Long? {
         if (seconds == 0L) return null
-        val maxSeconds = SECONDS.convert(maxMillis, java.util.concurrent.TimeUnit.MILLISECONDS)
+        val maxSeconds = SECONDS.convert(maxMillis, MILLISECONDS)
         return SECONDS.toMillis(seconds.coerceIn(-maxSeconds, maxSeconds))
     }
 
@@ -35,6 +37,14 @@ object SleepMath {
     fun nextTimeout(remaining: Long, delta: Long, allowCancel: Boolean, maxMillis: Long): Long {
         val next = (remaining + delta).coerceAtMost(maxMillis)
         return if (next <= 0 && !allowCancel) remaining else next
+    }
+
+    /**
+     * Rounds a positive duration up to the next whole minute, e.g. `29:01` → `30`, and at least `1`.
+     */
+    fun ceilMinutes(millis: Long): Long {
+        val minute = MINUTES.toMillis(1)
+        return ((millis + minute - 1) / minute).coerceAtLeast(1)
     }
 
     /**

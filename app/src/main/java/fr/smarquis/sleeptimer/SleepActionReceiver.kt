@@ -18,9 +18,6 @@ import fr.smarquis.sleeptimer.SleepNotification.update
 import fr.smarquis.sleeptimer.SleepTileService.Companion.requestTileUpdate
 import fr.smarquis.sleeptimer.SleepTimer.DEADLINE_TOLERANCE_MILLIS
 import fr.smarquis.sleeptimer.SleepTimer.REQUIRES_FOREGROUND_SERVICE
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_DECREMENT_MILLIS
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_INCREMENT_MILLIS
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_INITIAL_MILLIS
 
 class SleepActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -29,12 +26,12 @@ class SleepActionReceiver : BroadcastReceiver() {
     }
 
     private fun Context.handle(intent: Intent?) = when (SleepAction.parse(intent)) {
-        START -> show(timeout = SleepAction.duration(intent) ?: TIMEOUT_INITIAL_MILLIS)
+        START -> show(timeout = SleepAction.duration(intent) ?: SleepSetting.INITIAL.millis(this))
         UPDATE -> update(delta = SleepAction.duration(intent) ?: 0L)
-        INCREMENT -> update(TIMEOUT_INCREMENT_MILLIS)
+        INCREMENT -> update(SleepSetting.INCREMENT.millis(this))
         // The notification action is only disabled when (re)posted, it can become stale as time goes by.
         // Never let it end the timer without pausing playback: ignore it (but refresh the notification to disable it).
-        DECREMENT -> update(-TIMEOUT_DECREMENT_MILLIS, allowCancel = false)
+        DECREMENT -> update(-SleepSetting.DECREMENT.millis(this), allowCancel = false)
         STOP, CANCEL -> cancel()
         DISMISS -> onDismiss(SleepAction.deadline(intent))
         null -> Unit

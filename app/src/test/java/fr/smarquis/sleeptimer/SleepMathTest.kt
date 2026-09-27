@@ -2,6 +2,7 @@ package fr.smarquis.sleeptimer
 
 import fr.smarquis.sleeptimer.SleepMath.FADE_STEP_MAX_MILLIS
 import fr.smarquis.sleeptimer.SleepMath.FADE_TOTAL_MAX_MILLIS
+import fr.smarquis.sleeptimer.SleepMath.ceilMinutes
 import fr.smarquis.sleeptimer.SleepMath.fadeStepDelayMillis
 import fr.smarquis.sleeptimer.SleepMath.isBeforeDeadline
 import fr.smarquis.sleeptimer.SleepMath.nextTimeout
@@ -80,4 +81,18 @@ class SleepMathTest {
 
     @Test
     fun `missing deadline is never a dismissal`() = assertFalse(isBeforeDeadline(now = 1_000, deadline = 0, tolerance = 5_000))
+
+    @Test
+    fun `remaining time is rounded up to the minute`() {
+        assertEquals(1L, ceilMinutes(1))
+        assertEquals(1L, ceilMinutes(60_000))
+        assertEquals(2L, ceilMinutes(60_001))
+        assertEquals(30L, ceilMinutes(29 * 60_000L + 1_000))
+    }
+
+    @Test
+    fun `remaining time is at least one minute`() {
+        assertEquals(1L, ceilMinutes(0))
+        assertEquals(1L, ceilMinutes(-5_000))
+    }
 }

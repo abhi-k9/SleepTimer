@@ -10,10 +10,6 @@ object SleepTimer {
      */
     val REQUIRES_FOREGROUND_SERVICE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
 
-    val TIMEOUT_INITIAL_MILLIS = MINUTES.toMillis(30)
-    val TIMEOUT_INCREMENT_MILLIS = MINUTES.toMillis(10)
-    val TIMEOUT_DECREMENT_MILLIS = MINUTES.toMillis(10)
-
     /** Upper bound for any timer duration, to guard against overflows from externally provided durations. */
     val TIMEOUT_MAX_MILLIS = MINUTES.toMillis(24 * 60)
 

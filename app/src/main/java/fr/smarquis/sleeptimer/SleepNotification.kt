@@ -16,8 +16,6 @@ import fr.smarquis.sleeptimer.SleepAction.DECREMENT
 import fr.smarquis.sleeptimer.SleepAction.DISMISS
 import fr.smarquis.sleeptimer.SleepAction.INCREMENT
 import fr.smarquis.sleeptimer.SleepTimer.REQUIRES_FOREGROUND_SERVICE
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_DECREMENT_MILLIS
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_INITIAL_MILLIS
 import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_MAX_MILLIS
 import java.lang.System.currentTimeMillis
 import java.text.DateFormat
@@ -40,14 +38,18 @@ object SleepNotification {
     }
 
     /**
+     * @return the remaining time of the running timer, or `null` if there is none.
+     */
+    fun Context.remaining(): Long? = find()?.let { it.`when` - currentTimeMillis() }
+
+    /**
      * @param allowCancel whether the [delta] is allowed to end the timer, otherwise it is ignored.
      */
-    fun Context.update(delta: Long, allowCancel: Boolean = true) = find()?.let { existing ->
-        val remaining = existing.`when` - currentTimeMillis()
+    fun Context.update(delta: Long, allowCancel: Boolean = true) = remaining()?.let { remaining ->
         show(timeout = SleepMath.nextTimeout(remaining, delta, allowCancel, TIMEOUT_MAX_MILLIS))
     }
 
-    fun Context.show(timeout: Long = TIMEOUT_INITIAL_MILLIS): Notification? {
+    fun Context.show(timeout: Long = SleepSetting.INITIAL.millis(this)): Notification? {
         if (timeout <= 0) return null.also { cancel() }
         @Suppress("NAME_SHADOWING") val timeout = timeout.coerceAtMost(TIMEOUT_MAX_MILLIS)
         val eta = currentTimeMillis() + timeout
@@ -56,6 +58,7 @@ object SleepNotification {
         val sleepPendingIntent = SleepAudioService.pendingIntent(this, deadline)
         val notification = Notification.Builder(this, getString(R.string.notification_channel_id))
             .setCategory(CATEGORY_EVENT)
+            .setContentIntent(SleepTimerActivity.pendingIntent(this))
             .setVisibility(VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
             .setOngoing(true)
@@ -77,7 +80,7 @@ object SleepNotification {
                 if (SDK_INT_FULL >= BAKLAVA_1) setRequestPromotedOngoing(true)
             }
             .addAction(INCREMENT.action(this).build())
-            .addAction(DECREMENT.action(this, cancel = timeout <= TIMEOUT_DECREMENT_MILLIS).build())
+            .addAction(DECREMENT.action(this, cancel = timeout <= SleepSetting.DECREMENT.millis(this)).build())
             .addAction(CANCEL.action(this).build())
             .build()
         createNotificationChannel()

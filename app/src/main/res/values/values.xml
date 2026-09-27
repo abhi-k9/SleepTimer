@@ -12,6 +12,21 @@
     <string name="notification_channel_id">sleep_timer</string>
     <!--endregion-->
 
+    <!--region Screen-->
+    <string name="timer_title">Timer</string>
+    <string name="timer_start">Start</string>
+    <string name="timer_set">Set</string>
+    <string name="timer_stop">Stop</string>
+    <string name="timer_hours">Hours</string>
+    <string name="timer_minutes">Minutes</string>
+    <string name="unit_hours">h</string>
+    <string name="unit_minutes">min</string>
+    <string name="settings_title">Settings (minutes)</string>
+    <string name="settings_initial">Default</string>
+    <string name="settings_increment">+ step</string>
+    <string name="settings_decrement">− step</string>
+    <!--endregion-->
+
     <!--region Toasts-->
     <string name="toast_notification_permission"><i>Notifications</i> permission is required.</string>
     <string name="toast_alarm_permission"><i>Alarms &amp; reminders</i> permission is required since <b>Android 17</b>.</string>
