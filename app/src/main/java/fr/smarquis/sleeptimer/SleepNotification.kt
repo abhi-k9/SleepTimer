@@ -13,6 +13,7 @@ import android.os.SystemClock.elapsedRealtime
 import android.widget.Toast
 import fr.smarquis.sleeptimer.SleepAction.CANCEL
 import fr.smarquis.sleeptimer.SleepAction.DECREMENT
+import fr.smarquis.sleeptimer.SleepAction.DISMISS
 import fr.smarquis.sleeptimer.SleepAction.INCREMENT
 import fr.smarquis.sleeptimer.SleepTimer.REQUIRES_FOREGROUND_SERVICE
 import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_DECREMENT_MILLIS
@@ -66,9 +67,10 @@ object SleepNotification {
             .setUsesChronometer(true).setChronometerCountDown(true)
             .setTimeoutAfter(timeout)
             .apply {
-                // The system does not allow a notification `deleteIntent` to start a foreground service,
-                // an exact alarm is scheduled instead (see below).
+                // The system does not allow a notification `deleteIntent` to start a foreground service, an exact alarm
+                // is scheduled instead (see below), and the `deleteIntent` is only used to detect user dismissals.
                 if (!REQUIRES_FOREGROUND_SERVICE) setDeleteIntent(sleepPendingIntent)
+                else setDeleteIntent(DISMISS.deleteIntent(this@show, deadline))
             }
             .apply {
                 // Live Updates (promoted ongoing notifications) are only available since Android 16 QPR2 (API 36.1)

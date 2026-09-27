@@ -23,10 +23,16 @@ enum class SleepAction(private val value: String) {
         override fun title(context: Context) = "-" + MILLISECONDS.toMinutes(TIMEOUT_DECREMENT_MILLIS)
     },
     UPDATE("fr.smarquis.sleeptimer.action.UPDATE"),
+
+    /**
+     * Sent by the system when the notification is removed (timeout or user dismissal), see [deleteIntent].
+     */
+    DISMISS("fr.smarquis.sleeptimer.action.DISMISS"),
     ;
 
     companion object {
         private const val EXTRA_KEY_DURATION = "extras:duration"
+        private const val EXTRA_KEY_DEADLINE = "extras:deadline"
         fun parse(intent: Intent?): SleepAction? = entries.firstOrNull { it.value == intent?.action }
 
         /**
@@ -38,12 +44,25 @@ enum class SleepAction(private val value: String) {
                 ?: extras.getInt(EXTRA_KEY_DURATION, 0).toLong()
             return SleepMath.secondsToMillis(seconds, TIMEOUT_MAX_MILLIS)
         }
+
+        /**
+         * @return the [android.os.SystemClock.elapsedRealtime] based deadline set by [deleteIntent], or `0` if missing.
+         */
+        fun deadline(intent: Intent?): Long = intent?.getLongExtra(EXTRA_KEY_DEADLINE, 0L) ?: 0L
     }
 
     private fun intent(context: Context): Intent = Intent(context, SleepActionReceiver::class.java).setAction(value)
 
     private fun pendingIntent(context: Context, cancel: Boolean = false): PendingIntent? =
         PendingIntent.getBroadcast(context, 0, intent(context), PendingIntent.FLAG_IMMUTABLE).apply { if (cancel) cancel() }
+
+    /**
+     * There is only ever one such [PendingIntent] per action: [PendingIntent.FLAG_UPDATE_CURRENT] updates the [deadline]
+     * of the instance already referenced by the posted notification.
+     */
+    fun deleteIntent(context: Context, deadline: Long): PendingIntent = PendingIntent.getBroadcast(
+        context, 0, intent(context).putExtra(EXTRA_KEY_DEADLINE, deadline), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+    )
 
     fun action(context: Context, cancel: Boolean = false): Notification.Action.Builder =
         Notification.Action.Builder(Icon.createWithResource(context, 0), title(context), pendingIntent(context, cancel))
