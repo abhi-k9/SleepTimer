@@ -1,7 +1,6 @@
 package fr.smarquis.sleeptimer
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.getActivity
 import android.content.ComponentName
@@ -18,39 +17,33 @@ import android.service.quicksettings.Tile.STATE_ACTIVE
 import android.service.quicksettings.Tile.STATE_INACTIVE
 import android.service.quicksettings.TileService
 import android.widget.Toast
-import fr.smarquis.sleeptimer.SleepNotification.find
-import fr.smarquis.sleeptimer.SleepNotification.toggle
-import fr.smarquis.sleeptimer.SleepTimer.REQUIRES_FOREGROUND_SERVICE
 import java.text.DateFormat.SHORT
 import java.text.DateFormat.getTimeInstance
 import java.util.Date
 
-class SleepTileService : TileService() {
+fun Context.requestTileUpdate() = TileService.requestListeningState(this, ComponentName(this, SleepTileService::class.java))
 
-    companion object {
-        fun Context.requestTileUpdate() = requestListeningState(this, ComponentName(this, SleepTileService::class.java))
-    }
+class SleepTileService : TileService() {
 
     override fun onStartListening() = refreshTile()
 
-    override fun onClick() = when {
-        notificationManager().areNotificationsEnabled().not() -> requestNotificationsPermission()
-        REQUIRES_FOREGROUND_SERVICE && alarmManager().canScheduleExactAlarms().not() -> requestScheduleExactAlarmsPermission()
-        else -> toggle().let(::refreshTile)
+    override fun onClick() {
+        val timer = sleepTimer()
+        when (timer.missingPermission()) {
+            MissingPermission.NOTIFICATIONS -> requestNotificationsPermission()
+            MissingPermission.EXACT_ALARMS -> requestScheduleExactAlarmsPermission()
+            // The cancelled notification might still be considered active by NotificationManager... so we use an extra hint
+            null -> refreshTile(endsAt = timer.toggle()?.endsAt)
+        }
     }
 
-    private fun refreshTile(notification: Notification? = find()) = qsTile?.run {
-        when {
-            // The canceled notification might still be considered active by NotificationManager... so we use an extra hint
-            notification == null -> {
-                state = STATE_INACTIVE
-                if (SDK_INT >= Q) subtitle = resources.getText(R.string.tile_subtitle)
-            }
-
-            else -> {
-                state = STATE_ACTIVE
-                if (SDK_INT >= Q) subtitle = getTimeInstance(SHORT).format(Date(notification.`when`))
-            }
+    private fun refreshTile(endsAt: Long? = sleepTimer().endsAt()) = qsTile?.run {
+        if (endsAt == null) {
+            state = STATE_INACTIVE
+            if (SDK_INT >= Q) subtitle = resources.getText(R.string.tile_subtitle)
+        } else {
+            state = STATE_ACTIVE
+            if (SDK_INT >= Q) subtitle = getTimeInstance(SHORT).format(Date(endsAt))
         }
         updateTile()
     } ?: Unit

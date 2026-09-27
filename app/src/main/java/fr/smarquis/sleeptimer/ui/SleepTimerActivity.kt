@@ -24,15 +24,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import fr.smarquis.sleeptimer.SleepNotification.cancel
-import fr.smarquis.sleeptimer.SleepNotification.find
-import fr.smarquis.sleeptimer.SleepNotification.show
-import fr.smarquis.sleeptimer.SleepNotification.update
+import fr.smarquis.sleeptimer.MissingPermission
 import fr.smarquis.sleeptimer.SleepSetting
-import fr.smarquis.sleeptimer.SleepTileService.Companion.requestTileUpdate
-import fr.smarquis.sleeptimer.SleepTimer.REQUIRES_FOREGROUND_SERVICE
-import fr.smarquis.sleeptimer.alarmManager
-import fr.smarquis.sleeptimer.notificationManager
+import fr.smarquis.sleeptimer.SleepTimerController
+import fr.smarquis.sleeptimer.sleepTimer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -54,12 +49,13 @@ class SleepTimerActivity : ComponentActivity() {
         )
     }
 
+    private val timer: SleepTimerController by lazy { sleepTimer() }
     private var state by mutableStateOf(SleepTimerUiState())
 
     private val notificationPermission = registerForActivityResult(RequestPermission()) { granted ->
         refresh()
         // The permission can be denied without any prompt (e.g. after being denied twice): fallback to the settings.
-        if (!granted || !notificationManager().areNotificationsEnabled()) openNotificationSettings()
+        if (!granted || timer.missingPermission() == MissingPermission.NOTIFICATIONS) openNotificationSettings()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +87,9 @@ class SleepTimerActivity : ComponentActivity() {
     }
 
     private fun refresh() {
-        val endsAt = find()?.`when`
+        val endsAt = timer.endsAt()
+        // One warning at a time, in the order they must be fixed.
+        val missingPermission = timer.missingPermission()
         state = SleepTimerUiState(
             endsAt = endsAt,
             endsAtText = endsAt?.let { DateFormat.getTimeFormat(this).format(Date(it)) },
@@ -101,35 +99,34 @@ class SleepTimerActivity : ComponentActivity() {
             themeMode = Appearance.themeMode(this),
             dynamicColor = Appearance.dynamicColor(this),
             dynamicColorAvailable = Appearance.dynamicColorAvailable,
-            notificationsEnabled = notificationManager().areNotificationsEnabled(),
-            exactAlarmsAllowed = !REQUIRES_FOREGROUND_SERVICE || alarmManager().canScheduleExactAlarms(),
+            notificationsEnabled = missingPermission != MissingPermission.NOTIFICATIONS,
+            exactAlarmsAllowed = missingPermission != MissingPermission.EXACT_ALARMS,
         )
     }
 
-    /** Runs a timer [action], then refreshes the screen and the tile. */
-    private inline fun timer(action: () -> Unit) {
-        action()
-        requestTileUpdate()
+    /** Runs a [timer] operation, then refreshes the screen (the controller refreshes the tile). */
+    private inline fun update(operation: () -> Unit) {
+        operation()
         refresh()
     }
 
     private val actions = object : SleepTimerActions {
-        override fun start(minutes: Int) = when {
-            !state.notificationsEnabled -> requestNotifications()
-            !state.exactAlarmsAllowed -> requestExactAlarms()
-            else -> timer { show(MINUTES.toMillis(minutes.toLong())) }
+        override fun start(minutes: Int) = when (timer.missingPermission()) {
+            MissingPermission.NOTIFICATIONS -> requestNotifications()
+            MissingPermission.EXACT_ALARMS -> requestExactAlarms()
+            null -> update { timer.start(MINUTES.toMillis(minutes.toLong())) }
         }
 
-        override fun stop() = timer { cancel() }
+        override fun stop() = update { timer.stop() }
 
-        override fun extend() = timer { update(SleepSetting.INCREMENT.millis(this@SleepTimerActivity)) }
+        override fun extend() = update { timer.extend() }
 
-        override fun reduce() = timer { update(-SleepSetting.DECREMENT.millis(this@SleepTimerActivity), allowCancel = false) }
+        override fun reduce() = update { timer.reduce() }
 
-        override fun setMinutes(setting: SleepSetting, minutes: Int) = timer {
+        override fun setMinutes(setting: SleepSetting, minutes: Int) = update {
             setting.set(this@SleepTimerActivity, minutes)
             // Refresh the notification actions ("+N", "-N") of a running timer with the new steps.
-            if (setting != SleepSetting.INITIAL) update(delta = 0L)
+            if (setting != SleepSetting.INITIAL) timer.refreshNotification()
         }
 
         override fun setThemeMode(mode: ThemeMode) {

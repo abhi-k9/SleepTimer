@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
-import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_MAX_MILLIS
+import fr.smarquis.sleeptimer.SleepTimerController.Companion.TIMEOUT_MAX_MILLIS
 
 enum class SleepAction(private val value: String) {
     START("fr.smarquis.sleeptimer.action.START"),
