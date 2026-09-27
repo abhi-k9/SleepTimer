@@ -67,6 +67,8 @@ class SleepTileService : TileService() {
 
     private fun startActivityAndCollapseCompat(intent: Intent) {
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
+        // Settings can't be displayed on top of the keyguard, the device must be unlocked first.
+        if (isLocked) return unlockAndRun { startActivityAndCollapseCompat(intent) }
         @SuppressLint("StartActivityAndCollapseDeprecated")
         if (SDK_INT <= TIRAMISU) @Suppress("DEPRECATION") startActivityAndCollapse(intent)
         else startActivityAndCollapse(getActivity(this, 0, intent, FLAG_IMMUTABLE))

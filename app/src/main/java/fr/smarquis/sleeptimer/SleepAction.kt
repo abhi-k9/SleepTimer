@@ -5,8 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
-import fr.smarquis.sleeptimer.SleepNotification.TIMEOUT_DECREMENT_MILLIS
-import fr.smarquis.sleeptimer.SleepNotification.TIMEOUT_INCREMENT_MILLIS
+import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_DECREMENT_MILLIS
+import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_INCREMENT_MILLIS
+import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_MAX_MILLIS
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
 enum class SleepAction(private val value: String) {
@@ -27,7 +28,16 @@ enum class SleepAction(private val value: String) {
     companion object {
         private const val EXTRA_KEY_DURATION = "extras:duration"
         fun parse(intent: Intent?): SleepAction? = entries.firstOrNull { it.value == intent?.action }
-        fun duration(intent: Intent?): Long? = intent?.getLongExtra(EXTRA_KEY_DURATION, 0L)?.takeIf { it != 0L }?.times(1000)
+
+        /**
+         * @return the duration in milliseconds from the extra provided in seconds (as a `long` or an `int` extra), or `null` if missing.
+         */
+        fun duration(intent: Intent?): Long? {
+            val extras = intent?.extras ?: return null
+            val seconds = extras.getLong(EXTRA_KEY_DURATION, 0L).takeIf { it != 0L }
+                ?: extras.getInt(EXTRA_KEY_DURATION, 0).toLong()
+            return SleepMath.secondsToMillis(seconds, TIMEOUT_MAX_MILLIS)
+        }
     }
 
     private fun intent(context: Context): Intent = Intent(context, SleepActionReceiver::class.java).setAction(value)
