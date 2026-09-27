@@ -18,10 +18,10 @@ When the timer stops, audio playback is gradually lowered then paused.
 2. Tap the Tile to start a timer.
 3. Extend, reduce or cancel the timer with the notification actions.  
    Dismissing the notification (possible since Android 14) also cancels the timer.
-4. Tap the notification, or long-press the Tile, to set the timer to an exact duration,
-   and to configure the default duration and the `+`/`-` steps.
-
-__Note:__ Don't look for a launcher icon, this app is driven by its Quick Settings Tile.
+4. Open the app (launcher icon, notification tap, or long-press on the Tile) to:
+   - set the timer to an exact duration, or pick a preset,
+   - configure the default duration and the `+`/`-` steps,
+   - choose the theme (System, Light, Dark) and Material You dynamic colors.
 
 #### Automation
 
@@ -59,6 +59,8 @@ You can trigger the Sleep Timer with tools like [Tasker](https://play.google.com
 - [Notification.Builder.setTimeoutAfter(durationMs)](https://developer.android.com/reference/android/app/Notification.Builder#setTimeoutAfter(long)): set notification timeout.
 - [Notification.Builder.setDeleteIntent(intent)](https://developer.android.com/reference/android/app/Notification.Builder#setDeleteIntent(android.app.PendingIntent)): set deletion action.
 - [NotificationCompat.Builder.setRequestPromotedOngoing(requestPromotedOngoing)](https://developer.android.com/reference/android/app/Notification.Builder#setRequestPromotedOngoing(boolean)): request to be a promoted ongoing notification
+- [Jetpack Compose](https://developer.android.com/compose) and [Material 3](https://m3.material.io/): app screen, with [dynamic colors](https://developer.android.com/develop/ui/views/theming/dynamic-colors).
+- [UiModeManager.setApplicationNightMode(mode)](https://developer.android.com/reference/android/app/UiModeManager#setApplicationNightMode(int)): per-app theme.
 - [AudioManager.adjustStreamVolume(STREAM_MUSIC, ADJUST_LOWER, flags)](https://developer.android.com/reference/android/media/AudioManager#adjustStreamVolume(int,%20int,%20int)): lower media volume.
 - [AudioManager.setStreamVolume(STREAM_MUSIC, index, flags)](https://developer.android.com/reference/android/media/AudioManager#setStreamVolume(int,%20int,%20int)): restore initial volume.
 - [AudioManager.dispatchMediaKeyEvent(KeyEvent)](https://developer.android.com/reference/android/media/AudioManager#dispatchMediaKeyEvent(android.view.KeyEvent)): sends a simulated key event for a media button.

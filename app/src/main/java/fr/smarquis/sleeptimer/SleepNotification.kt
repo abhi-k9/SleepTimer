@@ -15,6 +15,7 @@ import fr.smarquis.sleeptimer.SleepAction.CANCEL
 import fr.smarquis.sleeptimer.SleepAction.DECREMENT
 import fr.smarquis.sleeptimer.SleepAction.DISMISS
 import fr.smarquis.sleeptimer.SleepAction.INCREMENT
+import fr.smarquis.sleeptimer.ui.SleepTimerActivity
 import fr.smarquis.sleeptimer.SleepTimer.REQUIRES_FOREGROUND_SERVICE
 import fr.smarquis.sleeptimer.SleepTimer.TIMEOUT_MAX_MILLIS
 import java.lang.System.currentTimeMillis

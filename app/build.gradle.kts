@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
 }
 
 val versionMajor = 1
@@ -52,6 +53,9 @@ android {
             isDebuggable = true
         }
     }
+    buildFeatures {
+        compose = true
+    }
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false
@@ -72,5 +76,11 @@ kotlin {
 }
 
 dependencies {
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.junit)
 }

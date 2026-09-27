@@ -1,5 +1,6 @@
 package fr.smarquis.sleeptimer
 
+import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
@@ -45,6 +46,18 @@ object SleepMath {
     fun ceilMinutes(millis: Long): Long {
         val minute = MINUTES.toMillis(1)
         return ((millis + minute - 1) / minute).coerceAtLeast(1)
+    }
+
+    /**
+     * Formats a countdown rounded up to the second: `H:MM:SS`, or `M:SS` under an hour. Negative values show `0:00`.
+     */
+    fun formatCountdown(millis: Long): String {
+        val totalSeconds = (millis.coerceAtLeast(0) + SECONDS.toMillis(1) - 1) / SECONDS.toMillis(1)
+        val hours = totalSeconds / 3600
+        val minutes = totalSeconds % 3600 / 60
+        val seconds = totalSeconds % 60
+        return if (hours > 0) String.format(Locale.ROOT, "%d:%02d:%02d", hours, minutes, seconds)
+        else String.format(Locale.ROOT, "%d:%02d", minutes, seconds)
     }
 
     /**

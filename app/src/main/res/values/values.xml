@@ -13,18 +13,45 @@
     <!--endregion-->
 
     <!--region Screen-->
-    <string name="timer_title">Timer</string>
-    <string name="timer_start">Start</string>
-    <string name="timer_set">Set</string>
-    <string name="timer_stop">Stop</string>
-    <string name="timer_hours">Hours</string>
-    <string name="timer_minutes">Minutes</string>
-    <string name="unit_hours">h</string>
+    <string name="timer_idle_title">No timer running</string>
+    <string name="timer_idle_body">Start one below, or from the Quick Settings tile.</string>
+    <string name="timer_remaining">Time left</string>
+    <string name="timer_remaining_description">%1$s left</string>
+    <string name="timer_ends_at">Ends at %1$s</string>
+    <string name="set_timer_title">Start a timer</string>
+    <string name="set_timer_title_running">Change the timer</string>
+    <string name="action_start">Start %1$s</string>
+    <string name="action_set">Set to %1$s</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_extend">+%1$d min</string>
+    <string name="action_reduce">−%1$d min</string>
+    <string name="duration_minutes">%1$d min</string>
+    <string name="duration_hours">%1$d h</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
     <string name="unit_minutes">min</string>
-    <string name="settings_title">Settings (minutes)</string>
-    <string name="settings_initial">Default</string>
-    <string name="settings_increment">+ step</string>
-    <string name="settings_decrement">− step</string>
+
+    <string name="section_settings">Timer settings</string>
+    <string name="settings_initial">Default duration</string>
+    <string name="settings_initial_description">Used by the Quick Settings tile</string>
+    <string name="settings_increment">Extend by</string>
+    <string name="settings_increment_description">Notification “+” button</string>
+    <string name="settings_decrement">Reduce by</string>
+    <string name="settings_decrement_description">Notification “−” button</string>
+    <string name="settings_range">Between %1$d and %2$d minutes</string>
+
+    <string name="section_appearance">Appearance</string>
+    <string name="theme_title">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="dynamic_color_title">Dynamic colors</string>
+    <string name="dynamic_color_description">Use colors from your wallpaper</string>
+
+    <string name="warning_notifications_title">Notifications are off</string>
+    <string name="warning_notifications_body">The timer runs as a notification, it can\'t start without it.</string>
+    <string name="warning_alarms_title">Alarms &amp; reminders are off</string>
+    <string name="warning_alarms_body">Since Android 17, this permission is required to pause playback on time.</string>
+    <string name="warning_action">Allow</string>
     <!--endregion-->
 
     <!--region Toasts-->

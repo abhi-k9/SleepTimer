@@ -24,5 +24,7 @@ enum class SleepSetting(private val key: String, val defaultMinutes: Int, val ra
 
     fun set(context: Context, minutes: Int) = context.prefs().edit().putInt(key, minutes.coerceIn(range)).apply()
 
-    private fun Context.prefs(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
 }
+
+/** Preferences storing all the user settings. */
+fun Context.prefs(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)

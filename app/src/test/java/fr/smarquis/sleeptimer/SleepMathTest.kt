@@ -4,6 +4,7 @@ import fr.smarquis.sleeptimer.SleepMath.FADE_STEP_MAX_MILLIS
 import fr.smarquis.sleeptimer.SleepMath.FADE_TOTAL_MAX_MILLIS
 import fr.smarquis.sleeptimer.SleepMath.ceilMinutes
 import fr.smarquis.sleeptimer.SleepMath.fadeStepDelayMillis
+import fr.smarquis.sleeptimer.SleepMath.formatCountdown
 import fr.smarquis.sleeptimer.SleepMath.isBeforeDeadline
 import fr.smarquis.sleeptimer.SleepMath.nextTimeout
 import fr.smarquis.sleeptimer.SleepMath.secondsToMillis
@@ -95,4 +96,22 @@ class SleepMathTest {
         assertEquals(1L, ceilMinutes(0))
         assertEquals(1L, ceilMinutes(-5_000))
     }
+
+    @Test
+    fun `countdown under an hour`() {
+        assertEquals("0:00", formatCountdown(0))
+        assertEquals("0:01", formatCountdown(1))
+        assertEquals("0:59", formatCountdown(59_000))
+        assertEquals("1:00", formatCountdown(59_001))
+        assertEquals("29:05", formatCountdown(29 * 60_000L + 5_000))
+    }
+
+    @Test
+    fun `countdown over an hour`() {
+        assertEquals("1:00:00", formatCountdown(60 * 60_000L))
+        assertEquals("2:03:04", formatCountdown((2 * 3600 + 3 * 60 + 4) * 1000L))
+    }
+
+    @Test
+    fun `countdown never goes negative`() = assertEquals("0:00", formatCountdown(-5_000))
 }

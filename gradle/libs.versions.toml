@@ -1,5 +1,19 @@
+[versions]
+activity = "1.13.0"
+lifecycle = "2.11.0"
+compose-bom = "2026.09.00"
+# Must be >= the Kotlin version bundled with AGP (built-in Kotlin), the Compose compiler plugin version matches it.
+kotlin = "2.4.20"
+
 [libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "lifecycle" }
 junit = "junit:junit:4.13.2"
 
 [plugins]
 android-application = "com.android.application:9.4.1"
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

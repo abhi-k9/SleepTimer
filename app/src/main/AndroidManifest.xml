@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.DeviceDefault"
+        android:theme="@style/Theme.SleepTimer"
         tools:ignore="DataExtractionRules">
         <service
             android:name=".SleepTileService"
@@ -29,12 +29,14 @@
                 android:value="true" />
         </service>
         <activity
-            android:name=".SleepTimerActivity"
-            android:excludeFromRecents="true"
+            android:name=".ui.SleepTimerActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:taskAffinity=""
-            android:theme="@style/Theme.SleepTimer.Dialog">
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.SleepTimer">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <!-- Long-pressing the Quick Settings tile -->
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
